@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Airports</title>
+</head>
+<body>
+<h1>Airports</h1>
+<table>
+    <tr>
+        <th>Code</th>
+        <th>City</th>
+    </tr>
+    {{range .}}
+    <tr>
+        <td>{{.ID}}</td>
+        <td><a href="/flights/{{.ID}}">{{.Name}}</a></td>
+    </tr>
+    {{end}}
+</table>
+<a href="/">Home</a>
+</body>
+</html>
