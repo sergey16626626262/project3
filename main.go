@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Airport struct {
@@ -34,11 +34,11 @@ type Seatssum struct {
 	Result int `field:"result"`
 }
 
-var db *pgx.Conn
+var db *pgxpool.Pool
 
 func init() {
 	var err error
-	db, err = pgx.Connect(context.Background(), "postgres://student:student@192.168.1.41:5432/demo")
+	db, err = pgxpool.New(context.Background(), "postgres://student:student@192.168.1.41:5432/demo")
 	if err != nil {
 		log.Fatalf("Unable to connect to database: %v\n", err)
 	}
@@ -57,7 +57,9 @@ func main() {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, `<h1>Welcome</h1><a href="/airports">View Airports</a>`)
+	context := ""
+	tmpl := template.Must(template.ParseFiles("templates/home.html"))
+	tmpl.Execute(w, context)
 }
 
 func airportsHandler(w http.ResponseWriter, r *http.Request) {
@@ -91,7 +93,6 @@ func calculateSeatsHandler(w http.ResponseWriter, r *http.Request) {
 	results := make([]string, len(airplanes))
 
 	start := time.Now()
-
 	for i, airplaneID := range airplanes {
 		wg.Add(1)
 		go func(i int, airplaneID string) {
